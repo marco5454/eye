@@ -1,5 +1,6 @@
 import { useCallback, useState } from 'react'
 import { supabase } from '../lib/supabaseClient'
+import { toError } from '../lib/errors'
 import { useAsyncEffect } from './useAsyncEffect'
 import type { Outcome, Output, OutputInsert } from '../lib/database.types'
 
@@ -52,7 +53,7 @@ export function useOutputs(): UseOutputsResult {
         error: null,
       })
     } catch (err) {
-      const error = err instanceof Error ? err : new Error('Unknown outputs fetch error')
+      const error = toError(err, 'Unknown outputs fetch error')
       console.error('[outputs] fetch failed:', error)
       setState({ status: 'error', data: null, error })
     }

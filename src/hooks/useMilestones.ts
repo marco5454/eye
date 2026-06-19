@@ -1,5 +1,6 @@
 import { useCallback, useState } from 'react'
 import { supabase } from '../lib/supabaseClient'
+import { toError } from '../lib/errors'
 import { useAsyncEffect } from './useAsyncEffect'
 import type {
   Milestone,
@@ -37,7 +38,7 @@ export function useMilestones(): UseMilestonesResult {
       if (error) throw error
       setState({ status: 'ready', data: data ?? [], error: null })
     } catch (err) {
-      const error = err instanceof Error ? err : new Error('Unknown milestones fetch error')
+      const error = toError(err, 'Unknown milestones fetch error')
       console.error('[milestones] fetch failed:', error)
       setState({ status: 'error', data: null, error })
     }

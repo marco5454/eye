@@ -1,5 +1,6 @@
 import { useCallback, useState } from 'react'
 import { supabase } from '../lib/supabaseClient'
+import { toError } from '../lib/errors'
 import { useAsyncEffect } from './useAsyncEffect'
 import type { Risk, RiskInsert } from '../lib/database.types'
 
@@ -36,7 +37,7 @@ export function useRisks(): UseRisksResult {
       if (error) throw error
       setState({ status: 'ready', data: data ?? [], error: null })
     } catch (err) {
-      const error = err instanceof Error ? err : new Error('Unknown risks fetch error')
+      const error = toError(err, 'Unknown risks fetch error')
       console.error('[risks] fetch failed:', error)
       setState({ status: 'error', data: null, error })
     }

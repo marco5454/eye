@@ -1,5 +1,6 @@
 import { useCallback, useState } from 'react'
 import { supabase } from '../lib/supabaseClient'
+import { toError } from '../lib/errors'
 import { useAsyncEffect } from './useAsyncEffect'
 import type {
   Milestone,
@@ -69,8 +70,7 @@ export function useTimelineData(): UseTimelineDataResult {
         error: null,
       })
     } catch (err) {
-      const error =
-        err instanceof Error ? err : new Error('Unknown timeline fetch error')
+      const error = toError(err, 'Unknown timeline fetch error')
       console.error('[timeline] fetch failed:', error)
       setState({ status: 'error', data: null, error })
     }

@@ -1,5 +1,6 @@
 import { useCallback, useState } from 'react'
 import { supabase } from '../lib/supabaseClient'
+import { toError } from '../lib/errors'
 import { useAsyncEffect } from './useAsyncEffect'
 import type {
   Milestone,
@@ -57,7 +58,7 @@ export function useDashboardData(): UseDashboardDataResult {
         error: null,
       })
     } catch (err) {
-      const error = err instanceof Error ? err : new Error('Unknown dashboard fetch error')
+      const error = toError(err, 'Unknown dashboard fetch error')
       console.error('[dashboard] fetch failed:', error)
       setState({ status: 'error', data: null, error })
     }
