@@ -1,5 +1,6 @@
-import { useEffect } from 'react'
+import { Suspense, useEffect } from 'react'
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
+import { Loader2 } from 'lucide-react'
 
 import Layout from './components/layout/Layout'
 import { routes } from './lib/routes'
@@ -9,6 +10,24 @@ import { seedDatabase } from './lib/seedData'
 // `seedDatabase()` is already idempotent (it bails when outcomes is non-empty),
 // but this avoids two simultaneous in-flight fetches on initial mount.
 let seedAttempted = false
+
+// Lightweight fallback shown while a lazy route chunk is downloading.
+// Sized to roughly match the first paint of every page so the layout
+// shell does not jump when the chunk resolves.
+function RouteFallback() {
+  return (
+    <div
+      role="status"
+      aria-live="polite"
+      className="flex min-h-[60vh] items-center justify-center"
+    >
+      <span className="inline-flex items-center gap-2 rounded-full bg-shell px-4 py-2 text-sm text-dusk shadow-sm ring-1 ring-mist">
+        <Loader2 className="h-4 w-4 animate-spin text-ocean" aria-hidden />
+        Loading…
+      </span>
+    </div>
+  )
+}
 
 export default function App() {
   useEffect(() => {
@@ -37,7 +56,15 @@ export default function App() {
       <Routes>
         <Route element={<Layout />}>
           {routes.map(({ path, element: Element }) => (
-            <Route key={path} path={path} element={<Element />} />
+            <Route
+              key={path}
+              path={path}
+              element={
+                <Suspense fallback={<RouteFallback />}>
+                  <Element />
+                </Suspense>
+              }
+            />
           ))}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Route>
