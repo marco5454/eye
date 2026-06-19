@@ -1,5 +1,6 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useState } from 'react'
 import { supabase } from '../lib/supabaseClient'
+import { useAsyncEffect } from './useAsyncEffect'
 import type { Outcome, Task, TaskInsert } from '../lib/database.types'
 
 // Page-specific hook for the Task Tracker page. Loads both `tasks` and
@@ -52,15 +53,12 @@ export function useTasks(): UseTasksResult {
       })
     } catch (err) {
       const error = err instanceof Error ? err : new Error('Unknown tasks fetch error')
-      // eslint-disable-next-line no-console
       console.error('[tasks] fetch failed:', error)
       setState({ status: 'error', data: null, error })
     }
   }, [])
 
-  useEffect(() => {
-    void fetchAll()
-  }, [fetchAll])
+  useAsyncEffect(fetchAll, [fetchAll])
 
   const createTask = useCallback(
     async (input: TaskInsert): Promise<Task> => {

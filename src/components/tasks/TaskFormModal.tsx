@@ -109,7 +109,6 @@ export default function TaskFormModal({
     if (!open) return
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setForm(task ? fromTask(task) : emptyForm)
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     setError(null)
     const id = window.setTimeout(() => titleRef.current?.focus(), 30)
     return () => window.clearTimeout(id)

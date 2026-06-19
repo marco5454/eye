@@ -1,5 +1,6 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useState } from 'react'
 import { supabase } from '../lib/supabaseClient'
+import { useAsyncEffect } from './useAsyncEffect'
 import type {
   Milestone,
   Outcome,
@@ -63,9 +64,7 @@ export function useDashboardData(): UseDashboardDataResult {
   }, [])
 
   // Mount-only fetch (per spec). No window-focus refetch.
-  useEffect(() => {
-    void fetchAll()
-  }, [fetchAll])
+  useAsyncEffect(fetchAll, [fetchAll])
 
   // Spread into a new object so the discriminated union is preserved on the
   // returned type. (Returning `{ ...state, refetch }` directly would widen.)

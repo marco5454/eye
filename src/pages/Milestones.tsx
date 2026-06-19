@@ -155,6 +155,10 @@ export default function Milestones() {
     } else {
       next.add(years.sort(compareYears)[0])
     }
+    // One-shot initialisation guarded by `initializedRef`. The setState only
+    // fires once after the first successful load, so the cascading-render
+    // concern the rule guards against doesn't apply here.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setExpanded(next)
   }, [status, data])
 

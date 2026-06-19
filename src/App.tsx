@@ -39,16 +39,13 @@ export default function App() {
     seedDatabase()
       .then((seeded) => {
         if (seeded) {
-          // eslint-disable-next-line no-console
           console.info('[seed] Database seeded with outcomes and reference tasks.')
         } else {
-          // eslint-disable-next-line no-console
           console.info('[seed] Database already populated; skipped seeding.')
         }
       })
       .catch((err) => {
         seedAttempted = false // allow retry on next mount if it failed
-        // eslint-disable-next-line no-console
         console.error('[seed] Seeding failed:', err)
       })
   }, [])

@@ -1,5 +1,6 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useState } from 'react'
 import { supabase } from '../lib/supabaseClient'
+import { useAsyncEffect } from './useAsyncEffect'
 import type { Risk, RiskInsert } from '../lib/database.types'
 
 // Page-specific hook for the Risk Register page. Loads risks ordered by
@@ -36,15 +37,12 @@ export function useRisks(): UseRisksResult {
       setState({ status: 'ready', data: data ?? [], error: null })
     } catch (err) {
       const error = err instanceof Error ? err : new Error('Unknown risks fetch error')
-      // eslint-disable-next-line no-console
       console.error('[risks] fetch failed:', error)
       setState({ status: 'error', data: null, error })
     }
   }, [])
 
-  useEffect(() => {
-    void fetchAll()
-  }, [fetchAll])
+  useAsyncEffect(fetchAll, [fetchAll])
 
   const createRisk = useCallback(
     async (input: RiskInsert): Promise<Risk> => {

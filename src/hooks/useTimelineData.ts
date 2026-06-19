@@ -1,5 +1,6 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useState } from 'react'
 import { supabase } from '../lib/supabaseClient'
+import { useAsyncEffect } from './useAsyncEffect'
 import type {
   Milestone,
   MilestoneInsert,
@@ -70,15 +71,12 @@ export function useTimelineData(): UseTimelineDataResult {
     } catch (err) {
       const error =
         err instanceof Error ? err : new Error('Unknown timeline fetch error')
-      // eslint-disable-next-line no-console
       console.error('[timeline] fetch failed:', error)
       setState({ status: 'error', data: null, error })
     }
   }, [])
 
-  useEffect(() => {
-    void fetchAll()
-  }, [fetchAll])
+  useAsyncEffect(fetchAll, [fetchAll])
 
   const updateTask = useCallback(
     async (id: string, patch: Partial<TaskInsert>): Promise<Task> => {

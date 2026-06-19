@@ -125,7 +125,6 @@ export async function seedDatabase(): Promise<boolean> {
     .select('*', { count: 'exact', head: true })
 
   if (countError) {
-    // eslint-disable-next-line no-console
     console.error('[seed] Could not check outcomes table:', countError)
     throw countError
   }
@@ -139,7 +138,6 @@ export async function seedDatabase(): Promise<boolean> {
     .select('id, outcome_number')
 
   if (outcomesError) {
-    // eslint-disable-next-line no-console
     console.error('[seed] Failed to insert outcomes:', outcomesError)
     throw outcomesError
   }
@@ -160,7 +158,6 @@ export async function seedDatabase(): Promise<boolean> {
 
   const { error: tasksError } = await supabase.from('tasks').insert(taskRows)
   if (tasksError) {
-    // eslint-disable-next-line no-console
     console.error('[seed] Failed to insert tasks:', tasksError)
     throw tasksError
   }

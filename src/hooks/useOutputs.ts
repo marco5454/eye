@@ -1,5 +1,6 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useState } from 'react'
 import { supabase } from '../lib/supabaseClient'
+import { useAsyncEffect } from './useAsyncEffect'
 import type { Outcome, Output, OutputInsert } from '../lib/database.types'
 
 // Page-specific hook for the Output Targets page. Loads both `outputs` and
@@ -52,15 +53,12 @@ export function useOutputs(): UseOutputsResult {
       })
     } catch (err) {
       const error = err instanceof Error ? err : new Error('Unknown outputs fetch error')
-      // eslint-disable-next-line no-console
       console.error('[outputs] fetch failed:', error)
       setState({ status: 'error', data: null, error })
     }
   }, [])
 
-  useEffect(() => {
-    void fetchAll()
-  }, [fetchAll])
+  useAsyncEffect(fetchAll, [fetchAll])
 
   const createOutput = useCallback(
     async (input: OutputInsert): Promise<Output> => {

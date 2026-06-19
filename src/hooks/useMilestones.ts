@@ -1,5 +1,6 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useState } from 'react'
 import { supabase } from '../lib/supabaseClient'
+import { useAsyncEffect } from './useAsyncEffect'
 import type {
   Milestone,
   MilestoneInsert,
@@ -37,15 +38,12 @@ export function useMilestones(): UseMilestonesResult {
       setState({ status: 'ready', data: data ?? [], error: null })
     } catch (err) {
       const error = err instanceof Error ? err : new Error('Unknown milestones fetch error')
-      // eslint-disable-next-line no-console
       console.error('[milestones] fetch failed:', error)
       setState({ status: 'error', data: null, error })
     }
   }, [])
 
-  useEffect(() => {
-    void fetchAll()
-  }, [fetchAll])
+  useAsyncEffect(fetchAll, [fetchAll])
 
   const createMilestone = useCallback(
     async (input: MilestoneInsert): Promise<Milestone> => {

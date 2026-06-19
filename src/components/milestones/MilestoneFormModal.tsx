@@ -86,7 +86,6 @@ export default function MilestoneFormModal({ open, milestone, onClose, onSave }:
     if (!open) return
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setForm(milestone ? fromMilestone(milestone) : emptyForm)
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     setError(null)
     // Focus title shortly after open so the dialog is mounted.
     const id = window.setTimeout(() => titleRef.current?.focus(), 30)
