@@ -1,0 +1,17 @@
+.env
+.env.local
+.env.*.local
+
+node_modules
+dist
+dist-ssr
+
+.git
+.github
+
+DEPLOY.md
+README.md
+*.log
+.DS_Store
+.vscode
+.idea
