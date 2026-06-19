@@ -89,3 +89,20 @@ export function quarterLabelFromIndex(index: number): string {
   const quarter = ((index - 1) % 4) + 1
   return `Y${year}Q${quarter}`
 }
+
+/**
+ * Inclusive [start, end] dates of a given grant quarter (1..12). Returns null
+ * for out-of-range indices. Used by the dashboard quarter-focus widget to
+ * decide whether a task is active in the current quarter.
+ *
+ * The end date is the day BEFORE the next quarter starts so the ranges tile
+ * without overlap.
+ */
+export function quarterDateRange(index: number): { start: Date; end: Date } | null {
+  if (index < 1 || index > 12) return null
+  const startOffset = (index - 1) * QUARTER_DAYS
+  const endOffset = index * QUARTER_DAYS
+  const start = new Date(GRANT_START.getTime() + startOffset * 86400000)
+  const end = new Date(GRANT_START.getTime() + endOffset * 86400000 - 86400000)
+  return { start, end }
+}

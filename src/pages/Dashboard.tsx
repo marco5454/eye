@@ -2,9 +2,10 @@ import { useMemo } from 'react'
 import { AlertCircle } from 'lucide-react'
 import CountdownRing from '../components/dashboard/CountdownRing'
 import OutcomeCard from '../components/dashboard/OutcomeCard'
+import QuarterFocus from '../components/dashboard/QuarterFocus'
 import RiskSnapshot from '../components/dashboard/RiskSnapshot'
 import StatusBanner from '../components/dashboard/StatusBanner'
-import UpcomingMilestones from '../components/dashboard/UpcomingMilestones'
+import UpcomingDeadlines from '../components/dashboard/UpcomingDeadlines'
 import { useDashboardData } from '../hooks/useDashboardData'
 import { getCurrentQuarter } from '../lib/grantPeriod'
 import type { Task } from '../lib/database.types'
@@ -48,7 +49,8 @@ function DashboardSkeleton() {
         <SkeletonCard />
         <SkeletonCard />
       </div>
-      <div className="grid gap-4 lg:grid-cols-2">
+      <div className="grid gap-4 lg:grid-cols-2 xl:grid-cols-3">
+        <SkeletonCard className="h-48" />
         <SkeletonCard className="h-48" />
         <SkeletonCard className="h-48" />
       </div>
@@ -163,9 +165,10 @@ export default function Dashboard() {
         )}
       </div>
 
-      {/* Bottom row — milestones + risks */}
-      <div className="grid gap-4 lg:grid-cols-2">
-        <UpcomingMilestones milestones={data.milestones} />
+      {/* Bottom row — quarter focus + upcoming deadlines + risks */}
+      <div className="grid gap-4 lg:grid-cols-2 xl:grid-cols-3">
+        <QuarterFocus tasks={data.tasks} />
+        <UpcomingDeadlines tasks={data.tasks} milestones={data.milestones} />
         <RiskSnapshot risks={data.risks} />
       </div>
     </div>
