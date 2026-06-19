@@ -19,6 +19,7 @@ import {
   taskQuarterSpan,
 } from '../components/timeline/timelineMath'
 import { useTimelineData } from '../hooks/useTimelineData'
+import { useToast } from '../hooks/useToast'
 import { getCurrentQuarter } from '../lib/grantPeriod'
 import type {
   Milestone,
@@ -90,6 +91,7 @@ function EmptyState() {
 export default function Timeline() {
   const { status, data, error, refetch, updateTask, updateMilestone } =
     useTimelineData()
+  const toast = useToast()
 
   const [searchParams, setSearchParams] = useSearchParams()
   const [filters, setFilters] = useState<TimelineFilters>(defaultFilters)
@@ -199,11 +201,25 @@ export default function Timeline() {
 
   async function handleSaveTask(input: TaskInsert) {
     if (!editingTask) return
-    await updateTask(editingTask.id, input)
+    try {
+      await updateTask(editingTask.id, input)
+      toast.success(`Task "${input.title}" updated`)
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Failed to update task'
+      toast.error(message)
+      throw err
+    }
   }
   async function handleSaveMilestone(input: MilestoneInsert) {
     if (!editingMilestone) return
-    await updateMilestone(editingMilestone.id, input)
+    try {
+      await updateMilestone(editingMilestone.id, input)
+      toast.success(`Milestone "${input.title}" updated`)
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Failed to update milestone'
+      toast.error(message)
+      throw err
+    }
   }
 
   if (status === 'loading') return <PageSkeleton />

@@ -9,6 +9,7 @@ import {
   type OutputFilters,
 } from '../components/outputs/outputFilters'
 import { useOutputs } from '../hooks/useOutputs'
+import { useToast } from '../hooks/useToast'
 import type {
   Outcome,
   Output,
@@ -131,6 +132,7 @@ export default function OutputTargets() {
     updateOutput,
     deleteOutput,
   } = useOutputs()
+  const toast = useToast()
 
   const [searchParams, setSearchParams] = useSearchParams()
   const [filters, setFilters] = useState<OutputFilters>(defaultFilters)
@@ -243,20 +245,34 @@ export default function OutputTargets() {
   }
 
   async function handleSave(input: OutputInsert) {
-    if (editing) {
-      await updateOutput(editing.id, input)
-    } else {
-      await createOutput(input)
-      setExpanded((prev) => {
-        const next = new Set(prev)
-        next.add(input.outcome_id ?? UNASSIGNED_KEY)
-        return next
-      })
+    try {
+      if (editing) {
+        await updateOutput(editing.id, input)
+        toast.success(`Output ${input.output_number} updated`)
+      } else {
+        await createOutput(input)
+        toast.success(`Output ${input.output_number} created`)
+        setExpanded((prev) => {
+          const next = new Set(prev)
+          next.add(input.outcome_id ?? UNASSIGNED_KEY)
+          return next
+        })
+      }
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Failed to save output'
+      toast.error(message)
+      throw err
     }
   }
 
   async function handleDelete(o: Output) {
-    await deleteOutput(o.id)
+    try {
+      await deleteOutput(o.id)
+      toast.success(`Output ${o.output_number} deleted`)
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Failed to delete output'
+      toast.error(message)
+    }
   }
 
   if (status === 'loading') return <PageSkeleton />

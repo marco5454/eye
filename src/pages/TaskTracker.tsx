@@ -6,6 +6,7 @@ import TaskFilterBar from '../components/tasks/TaskFilterBar'
 import TaskFormModal from '../components/tasks/TaskFormModal'
 import { defaultFilters, type TaskFilters } from '../components/tasks/taskFilters'
 import { useTasks } from '../hooks/useTasks'
+import { useToast } from '../hooks/useToast'
 import type {
   Outcome,
   Task,
@@ -119,6 +120,7 @@ export default function TaskTracker() {
     updateTask,
     deleteTask,
   } = useTasks()
+  const toast = useToast()
 
   const [searchParams, setSearchParams] = useSearchParams()
   const [filters, setFilters] = useState<TaskFilters>(defaultFilters)
@@ -245,20 +247,34 @@ export default function TaskTracker() {
   }
 
   async function handleSave(input: TaskInsert) {
-    if (editing) {
-      await updateTask(editing.id, input)
-    } else {
-      await createTask(input)
-      setExpanded((prev) => {
-        const next = new Set(prev)
-        next.add(input.outcome_id ?? UNASSIGNED_KEY)
-        return next
-      })
+    try {
+      if (editing) {
+        await updateTask(editing.id, input)
+        toast.success(`Task "${input.title}" updated`)
+      } else {
+        await createTask(input)
+        toast.success(`Task "${input.title}" created`)
+        setExpanded((prev) => {
+          const next = new Set(prev)
+          next.add(input.outcome_id ?? UNASSIGNED_KEY)
+          return next
+        })
+      }
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Failed to save task'
+      toast.error(message)
+      throw err
     }
   }
 
   async function handleDelete(t: Task) {
-    await deleteTask(t.id)
+    try {
+      await deleteTask(t.id)
+      toast.success(`Task "${t.title}" deleted`)
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Failed to delete task'
+      toast.error(message)
+    }
   }
 
   async function handleQuickUpdate(
@@ -275,7 +291,18 @@ export default function TaskTracker() {
         merged.percent_complete = 0
       }
     }
-    await updateTask(t.id, merged)
+    try {
+      await updateTask(t.id, merged)
+      // Quiet success — silent for inline percent drags so we don't spam.
+      // Only confirm when the status changed (a deliberate dropdown action).
+      if (patch.status !== undefined) {
+        toast.success(`"${t.title}" → ${patch.status}`)
+      }
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Failed to update task'
+      toast.error(message)
+      throw err // let TaskRow's optimistic UI revert
+    }
   }
 
   if (status === 'loading') return <PageSkeleton />

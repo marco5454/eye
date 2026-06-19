@@ -3,6 +3,7 @@ import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 import { Loader2 } from 'lucide-react'
 
 import Layout from './components/layout/Layout'
+import ToastProvider from './components/ui/ToastProvider'
 import { routes } from './lib/routes'
 import { seedDatabase } from './lib/seedData'
 
@@ -53,22 +54,24 @@ export default function App() {
 
   return (
     <BrowserRouter>
-      <Routes>
-        <Route element={<Layout />}>
-          {routes.map(({ path, element: Element }) => (
-            <Route
-              key={path}
-              path={path}
-              element={
-                <Suspense fallback={<RouteFallback />}>
-                  <Element />
-                </Suspense>
-              }
-            />
-          ))}
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Route>
-      </Routes>
+      <ToastProvider>
+        <Routes>
+          <Route element={<Layout />}>
+            {routes.map(({ path, element: Element }) => (
+              <Route
+                key={path}
+                path={path}
+                element={
+                  <Suspense fallback={<RouteFallback />}>
+                    <Element />
+                  </Suspense>
+                }
+              />
+            ))}
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Route>
+        </Routes>
+      </ToastProvider>
     </BrowserRouter>
   )
 }

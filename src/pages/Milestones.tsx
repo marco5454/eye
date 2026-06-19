@@ -8,6 +8,7 @@ import {
 import MilestoneFormModal from '../components/milestones/MilestoneFormModal'
 import YearGroup from '../components/milestones/YearGroup'
 import { useMilestones } from '../hooks/useMilestones'
+import { useToast } from '../hooks/useToast'
 import { getGrantPhase } from '../lib/grantPeriod'
 import type { Milestone, MilestoneInsert } from '../lib/database.types'
 
@@ -129,6 +130,7 @@ export default function Milestones() {
     updateMilestone,
     deleteMilestone,
   } = useMilestones()
+  const toast = useToast()
 
   const [filters, setFilters] = useState<MilestoneFilters>(defaultFilters)
   const [modalOpen, setModalOpen] = useState(false)
@@ -213,21 +215,35 @@ export default function Milestones() {
   }
 
   async function handleSave(input: MilestoneInsert) {
-    if (editing) {
-      await updateMilestone(editing.id, input)
-    } else {
-      await createMilestone(input)
-      // Auto-expand the year we just added a milestone to.
-      setExpanded((prev) => {
-        const next = new Set(prev)
-        next.add(input.year)
-        return next
-      })
+    try {
+      if (editing) {
+        await updateMilestone(editing.id, input)
+        toast.success(`Milestone "${input.title}" updated`)
+      } else {
+        await createMilestone(input)
+        toast.success(`Milestone "${input.title}" created`)
+        // Auto-expand the year we just added a milestone to.
+        setExpanded((prev) => {
+          const next = new Set(prev)
+          next.add(input.year)
+          return next
+        })
+      }
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Failed to save milestone'
+      toast.error(message)
+      throw err // let the modal show its inline error too
     }
   }
 
   async function handleDelete(m: Milestone) {
-    await deleteMilestone(m.id)
+    try {
+      await deleteMilestone(m.id)
+      toast.success(`Milestone "${m.title}" deleted`)
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Failed to delete milestone'
+      toast.error(message)
+    }
   }
 
   if (status === 'loading') return <PageSkeleton />

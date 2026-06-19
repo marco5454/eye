@@ -10,6 +10,7 @@ import {
 } from '../components/risks/riskFilters'
 import { nextRiskNumber, sortRisks } from '../components/risks/riskMath'
 import { useRisks } from '../hooks/useRisks'
+import { useToast } from '../hooks/useToast'
 import type { Risk, RiskInsert } from '../lib/database.types'
 
 function applyFilters(risks: Risk[], filters: RiskFilters): Risk[] {
@@ -99,6 +100,7 @@ function EmptyState({ onCreate }: { onCreate: () => void }) {
 export default function RiskRegister() {
   const { status, data, error, refetch, createRisk, updateRisk, deleteRisk } =
     useRisks()
+  const toast = useToast()
 
   const [filters, setFilters] = useState<RiskFilters>(defaultFilters)
   const [modalOpen, setModalOpen] = useState(false)
@@ -156,15 +158,29 @@ export default function RiskRegister() {
   }
 
   async function handleSave(input: RiskInsert) {
-    if (editing) {
-      await updateRisk(editing.id, input)
-    } else {
-      await createRisk(input)
+    try {
+      if (editing) {
+        await updateRisk(editing.id, input)
+        toast.success(`Risk R${input.risk_number} updated`)
+      } else {
+        await createRisk(input)
+        toast.success(`Risk R${input.risk_number} added`)
+      }
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Failed to save risk'
+      toast.error(message)
+      throw err
     }
   }
 
   async function handleDelete(r: Risk) {
-    await deleteRisk(r.id)
+    try {
+      await deleteRisk(r.id)
+      toast.success(`Risk R${r.risk_number} deleted`)
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Failed to delete risk'
+      toast.error(message)
+    }
   }
 
   // Clicking a risk pill in the matrix scrolls to its row and flashes it.
