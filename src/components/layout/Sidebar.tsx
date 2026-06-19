@@ -11,7 +11,7 @@ export default function Sidebar() {
     : 'Grant ended'
 
   return (
-    <aside className="hidden md:flex md:w-64 md:flex-col md:shrink-0 bg-mist border-r border-sky/60">
+    <aside className="hidden md:flex md:w-64 md:flex-col md:shrink-0 bg-mist border-r border-sky/60 print:hidden">
       {/* Brand */}
       <div className="flex items-center gap-3 px-6 py-6">
         <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-ocean text-white shadow-sm">

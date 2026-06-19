@@ -29,3 +29,25 @@
     @apply min-h-[44px];
   }
 }
+
+@media print {
+  /* Force white background and dark text for printable pages. */
+  html,
+  body,
+  #root {
+    @apply bg-shell;
+  }
+
+  /* Strip the min-height so multi-page documents flow naturally. */
+  button,
+  [role='button'] {
+    min-height: 0 !important;
+  }
+
+  /* Avoid splitting list items across pages where possible. */
+  li {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+}
+

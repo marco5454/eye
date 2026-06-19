@@ -15,7 +15,7 @@ export default function TopBar() {
     : 'Grant ended'
 
   return (
-    <header className="sticky top-0 z-20 border-b border-sky/60 bg-sand/85 backdrop-blur">
+    <header className="sticky top-0 z-20 border-b border-sky/60 bg-sand/85 backdrop-blur print:hidden">
       <div className="flex items-center justify-between gap-4 px-4 py-4 md:px-8">
         <div className="min-w-0">
           <h1 className="truncate text-xl font-bold text-dusk md:text-2xl">

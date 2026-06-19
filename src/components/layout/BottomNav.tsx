@@ -4,7 +4,7 @@ import { routes } from '../../lib/routes'
 export default function BottomNav() {
   return (
     <nav
-      className="md:hidden fixed inset-x-0 bottom-0 z-30 border-t border-sky/60 bg-shell/95 backdrop-blur"
+      className="md:hidden fixed inset-x-0 bottom-0 z-30 border-t border-sky/60 bg-shell/95 backdrop-blur print:hidden"
       aria-label="Primary"
     >
       <ul className="grid grid-cols-6">
