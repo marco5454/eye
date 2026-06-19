@@ -3,6 +3,7 @@ import type { ComponentType, LazyExoticComponent } from 'react'
 import type { LucideIcon } from 'lucide-react'
 import {
   Home,
+  Target,
   CheckSquare,
   Calendar,
   BarChart3,
@@ -14,6 +15,7 @@ import {
 // The eager dashboard load drops the initial JS payload by ~60% and
 // keeps Vite from emitting the >500 KB chunk warning.
 const Dashboard = lazy(() => import('../pages/Dashboard'))
+const Goals = lazy(() => import('../pages/Goals'))
 const TaskTracker = lazy(() => import('../pages/TaskTracker'))
 const Timeline = lazy(() => import('../pages/Timeline'))
 const OutputTargets = lazy(() => import('../pages/OutputTargets'))
@@ -33,6 +35,7 @@ export type RouteMeta = {
 // and App router all consume this list.
 export const routes: RouteMeta[] = [
   { path: '/',           label: 'Dashboard',  icon: Home,           element: Dashboard,     end: true },
+  { path: '/goals',      label: 'Goals',      icon: Target,         element: Goals                  },
   { path: '/tasks',      label: 'Tasks',      icon: CheckSquare,    element: TaskTracker            },
   { path: '/timeline',   label: 'Timeline',   icon: Calendar,       element: Timeline               },
   { path: '/outputs',    label: 'Outputs',    icon: BarChart3,      element: OutputTargets          },
